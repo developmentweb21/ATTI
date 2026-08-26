@@ -1,0 +1,1 @@
+<section class="panel"><div class="panel-head"><div><h2>Daftar tiket</h2><p>Seluruh laporan layanan IT.</p></div><a class="button primary" href="<?= site_url('tickets/create') ?>">+ Buat tiket</a></div><?php $this->load->view('ticket/table',array('tickets'=>$tickets)); ?></section>

@@ -1,0 +1,7 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Rolemenus extends CI_Controller {
+    public function __construct(){parent::__construct();if(!$this->session->userdata('user'))redirect('login');$user=(object)$this->session->userdata('user');if($user->nama_role!=='Admin')show_error('Halaman ini khusus Admin.',403);}
+    public function index($role_id=NULL){$roles=$this->db->order_by('id')->get('roles')->result();if(!$roles)show_error('Role belum tersedia.');$role_id=$role_id?:$roles[0]->id;$checked=$this->db->select('menu_id')->where('role_id',$role_id)->get('role_menus')->result_array();$checked=array_column($checked,'menu_id');$this->load->view('layouts/header',array('title'=>'Akses Menu Role'));$this->load->view('admin/role_menus',array('roles'=>$roles,'selected_role'=>$role_id,'menus'=>$this->Menu_model->all(),'checked'=>$checked));$this->load->view('layouts/footer');}
+    public function save($role_id){if($this->input->method()!=='post')show_404();$menus=array_map('intval',(array)$this->input->post('menus'));$valid=array_column($this->Menu_model->all(),'id');$menus=array_intersect($menus,$valid);$this->db->trans_start();$this->db->where('role_id',(int)$role_id)->delete('role_menus');foreach($menus as $menu_id)$this->db->insert('role_menus',array('role_id'=>(int)$role_id,'menu_id'=>$menu_id));$this->db->trans_complete();$this->session->set_flashdata('success','Hak akses menu berhasil disimpan.');redirect('admin/rolemenus/index/'.$role_id);}
+}
